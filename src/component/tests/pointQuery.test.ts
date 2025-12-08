@@ -160,6 +160,35 @@ test("closest point query - basic functionality", async () => {
     const result6 = await query6.execute(ctx);
     expect(result6.length).toBe(1);
     expect(result6[0].key).toBe("point3");
+
+    // Test multiple should filters
+    const query7 = new ClosestPointQuery(
+      s2,
+      logger,
+      { latitude: 0, longitude: 0 },
+      10000000,
+      3,
+      opts.minLevel,
+      opts.maxLevel,
+      opts.levelMod,
+      [
+        {
+          occur: "should",
+          filterKey: "category",
+          filterValue: "tea",
+        },
+        {
+          occur: "should",
+          filterKey: "category",
+          filterValue: "coffee",
+        },
+      ],
+    );
+    const result7 = await query7.execute(ctx);
+    expect(result7.length).toBe(3);
+    expect(new Set(result7.map((r) => r.key))).toEqual(
+      new Set(["point1", "point2", "point3"]),
+    );
   });
 });
 
